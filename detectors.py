@@ -28,30 +28,10 @@ class ConvDetector(nn.Module):
         Returns:
             torch.Tensor: logits (if training) or activations (if eval)
         """
-        if self.training:
-            outp = self.layers(inp).view(
+        return self.layers(inp).view(
                 inp.shape[0],
                 5 + self.num_classes,
                 len(self.anchors),
                 inp.shape[-2],
                 inp.shape[-1]
-            )
-        else:
-            with torch.no_grad():
-                outp = self.layers(inp).view(
-                    inp.shape[0],
-                    5 + self.num_classes,
-                    len(self.anchors),
-                    inp.shape[-2],
-                    inp.shape[-1]
-                )
-                det_score = outp[:, :1].sigmoid()
-                center_offset = outp[:, 1:3].sigmoid()
-                size_offset = outp[:, 3:5].exp()
-                size_offset *= self.anchors.T.view(1, 2, -1, 1, 1)
-                cls_score = outp[:, 5:].argmax(dim=1, keepdim=True)
-                outp = torch.cat(
-                    [det_score, center_offset, size_offset, cls_score],
-                    dim=1
-                )
-        return outp
+        )
