@@ -54,6 +54,20 @@ class ConvBlock(nn.Sequential):
         )
     # pylint: enable=too-many-arguments
 
+    def __repr__(self) -> str:
+        argstr = ', '.join([
+            f'in_channels={self[-1].in_channels}',
+            f'out_channels={self[-1].out_channels}',
+            f'kernel_size={self[-1].kernel_size}',
+            f'stride={self[-1].stride}',
+            f'padding={self[-1].padding}',
+            f'dilation={self[-1].dilation}',
+            f'groups={self[-1].groups}',
+            f'bias={self[-1].bias is not None}',
+            f'norm_first={isinstance(self[0], nn.BatchNorm2d)}'
+        ])
+        return f'ConvBlock({argstr})'
+
 
 # pylint: disable=too-many-instance-attributes
 class SelfAttention2d(nn.Module):
