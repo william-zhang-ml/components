@@ -8,14 +8,21 @@ class ConvDetector(nn.Module):
     def __init__(self,
                  in_channels: int,
                  num_classes: int,
-                 anchors: torch.Tensor) -> None:
-        """"""
+                 num_anchors: int) -> None:
+        """Initialize parameters.
+
+        Args:
+            in_channels (int): number of input channels
+            num_classes (int): number of target classes
+            num_anchors (int): number of anchors to support
+        """
         super().__init__()
-        self.in_channels, self.num_classes = in_channels, num_classes
-        self.register_buffer('anchors', anchors)
+        self.in_channels = in_channels
+        self.num_classes = num_classes
+        self.num_anchors = num_anchors
         self.layers = nn.Conv2d(
             in_channels=in_channels,
-            out_channels=(5 + num_classes) * len(anchors),
+            out_channels=(5 + num_classes) * num_anchors,
             kernel_size=1
         )
 
@@ -31,7 +38,7 @@ class ConvDetector(nn.Module):
         return self.layers(inp).view(
                 inp.shape[0],
                 5 + self.num_classes,
-                len(self.anchors),
+                self.num_anchors,
                 inp.shape[-2],
                 inp.shape[-1]
         )
